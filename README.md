@@ -26,4 +26,3 @@
 
 # Donate
 You can donate to my PayPal at https://www.paypal.com/paypalme/fmrhrt <3
-
