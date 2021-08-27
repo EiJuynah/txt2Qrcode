@@ -14,6 +14,11 @@
  
 <br>
 
+# Example
+![qrmaker_example.png](https://cdn.discordapp.com/attachments/778283706388709376/880753675679727617/unknown.png)
+ 
+<br>
+
 # Author
 - **Astraa**
     - [Github](https://github.com/AstraaDev)
