@@ -1,75 +1,39 @@
 import qrcode
-import tkinter
-from tkinter import *
-import tkinter.font as font
-from PIL import Image, ImageTk
+import os
 
-t1 = ""
-t2 = ""
-create = ""
-recup = ""
 
-def launch():
+def text_to_qr(input_text, file_path, T=800):
+    # 检查输入文本的长度是否超过阈值T
+    if len(input_text) > T:
+        # 如果超过，将文本分割成多个部分
+        for i in range(0, len(input_text), T):
+            # 对每个部分，生成一个二维码
+            qr = qrcode.make(input_text[i:i+T])
+            # 使用file_path和当前的索引来命名
+            qr.save(f"{file_path}_{i//T}.png")
+    else:
+        # 如果没有超过阈值，直接生成二维码
+        qr = qrcode.make(input_text)
+        qr.save(file_path)
 
-    def create():
-        img = qrcode.make(t1.get())
+def file_to_qr(file_path, qr_path, T=500):
+    # 使用open函数和read方法来读取文件的内容
+    with open(file_path, 'r',encoding='utf-8') as file:
+        content = file.read()
+    # 调用text_to_qr函数，将读取的内容和文件路径作为参数
+    text_to_qr(content, qr_path, T)
 
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=10,
-            border=4,
-        )
+def files_to_qr():
+    # 文件路径列表
+    file_paths = [f for f in os.listdir() if os.path.splitext(f)[1] == '.txt']
 
-        qr.add_data(t1.get())
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
+    # 遍历文件路径列表
+    for file_path in file_paths:
+        # 对每个文件调用file_to_qr函数
+        save_path = file_path.replace(".txt", "")
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
+        file_to_qr(file_path, f"{save_path}//"+save_path)
 
-        img.save("qr_code.png")
-
-        if (b1['state'] == NORMAL):
-            b1['state'] = DISABLED
-        else:
-            b1['state'] = DISABLED
-
-        qr1 = Image.open("qr_code.png")
-        resize_image = qr1.resize((157, 157))
-        qrrcode = ImageTk.PhotoImage(resize_image)
-        image1 = tkinter.Label(image=qrrcode)
-        image1.image = qrrcode
-        image1.place(x=190, y=148)
-
-    # label 0
-    lbl0=Label(text='QR MAKER', font=("bold", 24))
-    lbl0.place(x=190, y=12)
-    # label 1
-    lbl1=Label(text='Please write your Text/Link to convert into a QR Code', font=(10))
-    lbl1.place(x=90, y=65)
-    # label 2
-    l = LabelFrame(window, text="Result", padx=50, pady=68)
-    l.pack(fill="both", expand="yes")
-    l.place(x=189, y=135)
-    Label(l, text="No Result.").pack()
-
-    # text 1
-    t1=Entry(bd=2, width=80)
-    t1.place(x=35, y=95)
-
-    # boutton 1
-    tb = font.Font(size=14)
-    b1=Button(text='Convert', command=create)
-    b1.place(x=177, y=340)
-    b1['font'] = tb
-    # boutton 2
-    b2=Button(text='Reset', command=reset)
-    b2.place(x=290, y=340)
-    b2['font'] = tb
-
-def reset():
-    launch()
-
-window=Tk()
-mywin=launch()
-window.title("QR Maker by Astraa")
-window.geometry('550x390')
-window.mainloop()
+if __name__ == '__main__':
+    files_to_qr()
